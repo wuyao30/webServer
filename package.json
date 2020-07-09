@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/wuyao20/webServer/issues"
   },
-  "homepage": "https://github.com/wuyao20/webServer#readme"
+  "homepage": "https://github.com/wuyao20/webServer#readme",
+  "devDependencies": {
+    "http": "0.0.1-security",
+    "querystring": "^0.2.0"
+  }
 }
