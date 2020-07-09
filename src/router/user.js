@@ -1,5 +1,3 @@
-const queryString = require('querystring')
-
 const handleUserRouter = (req, res) => {
     const method = req.method
 

@@ -1,10 +1,14 @@
+const { blogList } = require('../controller/blog')
+const { SuccessModel, ErrorModel } = require('../model/resModel')
+
 const handleBlogRouter = (req, res) => {
     const method = req.method
 
     if(method === 'GET' && req.path === '/api/blog/list') {
-        return {
-            msg : 'get blog list interface'
-        }
+        const author = req.query.author
+        const keyword = req.query.keyword
+        const blogData = blogList(author, keyword)
+        return new SuccessModel(blogData)
     }
     
     if(method === 'GET' && req.path === '/api/blog/detail') {
