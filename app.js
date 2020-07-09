@@ -1,37 +1,25 @@
-const http = require('http')
-const queryString = require('querystring')
+const handlerUserRouter = require('./src/router/user')
+const handlerBlogRouter = require('./src/router/blog')
 
-const server = http.createServer((request, response) => {
-    const method = request.method
-    const url = request.url
-    const path = url.split('?')[0]
-    const query = queryString.parse(url.split('?')[1])
-    
-    //set reponse data format
-    response.setHeader('Content-Type', 'application/json')
-    const resData = {
-        method,
-        url,
-        path,
-        query
+const serverHandler = (req, res) => {
+    res.setHeader('Content-Type', 'application/json')
+    const url = req.url
+    req.path = url.split('?')[0]
+
+    const blogData = handlerBlogRouter(req, res)
+    if(blogData) {
+        res.end(JSON.stringify(blogData))
+        return
     }
-    if(method === 'GET') {
-        response.end(
-            JSON.parse(resData)
-        )
+    const userData = handlerUserRouter(req, res)
+    if(userData) {
+        res.end(JSON.stringify(userData))
+        return
     }
 
-    if(method === 'POST') {
-        let postData = ''
-        request.on('data', chunk => {
-            postData += chunk.toString()
-        })
-        request.on('end', () => {
-            response.end(
-                JSON.parse(postData)
-            )
-        })
-    }
-})
+    res.writeHead(404, {"Content-Type": "text/plain"})
+    res.write("404 NOT FOUNT")
+    res.end()
+}
 
-server.listen(8888)
+module.exports = serverHandler
