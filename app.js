@@ -38,9 +38,16 @@ const serverHandler = (req, res) => {
         req.body = postData
 
         //处理 blog router
-        const blogData = handlerBlogRouter(req, res)
-        if(blogData) {
-            res.end(JSON.stringify(blogData))
+        // const blogData = handlerBlogRouter(req, res)
+        // if(blogData) {
+        //     res.end(JSON.stringify(blogData))
+        //     return
+        // }
+        const blogResult = handlerBlogRouter(req, res)
+        if(blogResult) {
+            blogResult.then(blogData => {
+                res.end(JSON.stringify(blogData))
+            })
             return
         }
         //handler user router
