@@ -34,9 +34,10 @@ const serverHandler = (req, res) => {
     const url = req.url
     req.path = url.split('?')[0]
     req.query = queryString.parse(url.split('?')[1])
+    
     getPostData(req).then(postData => {
         req.body = postData
-
+        console.log(postData)
         //处理 blog router
         // const blogData = handlerBlogRouter(req, res)
         // if(blogData) {

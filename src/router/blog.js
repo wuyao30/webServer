@@ -18,13 +18,20 @@ const handleBlogRouter = (req, res) => {
     }
     
     if(method === 'GET' && req.path === '/api/blog/detail') {
-        const data = getDetail(id)
-        return new SuccessModel(data)
+        return getDetail(id).then(data => {
+            return new SuccessModel(data)
+        }).catch(err => {
+            return new ErrorModel(err)
+        })
     }
     
     if(method === 'POST' && req.path === '/api/blog/new') {
-        const data = newBlog(req.body)
-        return new SuccessModel(data)
+        req.body.author = 'salted'
+        return newBlog(req.body).then(data => {
+            return new SuccessModel(data)
+        }).catch(err => {
+            return new ErrorModel(err)
+        })
     }
     
     if(method === 'POST' && req.path === '/api/blog/update') {
