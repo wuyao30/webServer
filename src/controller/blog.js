@@ -39,11 +39,32 @@ const newBlog = (blogData = {}) => {
 }
 
 const updateBlog = (id, blogData = {}) => {
-    return true
+    const title = blogData.title
+    const content = blogData.content
+    let sql = `
+        update blogs set title = '${title}', content='${content}' where id = ${id}
+    `
+    return exec(sql).then(updateData => {
+        console.log(updateData)
+        if(updateData.affectedRows > 0) {
+            return true
+        } else {
+            return false
+        }
+    })
 }
 
-const delBlog = id => {
-    return true
+const delBlog = (id, author) => {
+    console.log(id, author)
+    let sql = `delete from  blogs  where id=${id} and author='${author}'; `
+    console.log(sql)
+    return exec(id).then(result => {
+        if(result.affectedRows > 0) {
+            return true
+        } else {
+            return false
+        }
+    })
 }
 
 module.exports = {
