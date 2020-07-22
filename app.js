@@ -34,10 +34,21 @@ const serverHandler = (req, res) => {
     const url = req.url
     req.path = url.split('?')[0]
     req.query = queryString.parse(url.split('?')[1])
+
+    req.cookie = {}
+    const cookieString = req.headers.cookie || ''
+    cookieString.split(';').forEach(item => {
+        if(!item) {
+            return
+        }
+        const arr = item.split('=')
+        const key = arr[0]
+        const val = arr[1]
+        req.cookie[key] = val
+    })
     
     getPostData(req).then(postData => {
         req.body = postData
-        console.log(postData)
         //处理 blog router
         // const blogData = handlerBlogRouter(req, res)
         // if(blogData) {
