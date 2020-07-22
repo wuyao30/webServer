@@ -52,9 +52,16 @@ const serverHandler = (req, res) => {
             return
         }
         //handler user router
-        const userData = handlerUserRouter(req, res)
-        if(userData) {
-            res.end(JSON.stringify(userData))
+        // const userData = handlerUserRouter(req, res)
+        // if(userData) {
+        //     res.end(JSON.stringify(userData))
+        //     return
+        // }
+        const userResulet = handlerUserRouter(req, res)
+        if(userResulet) {
+            userResulet.then(userData => {
+                res.end(JSON.stringify(userData))
+            })
             return
         }
         res.writeHead(404, {"Content-Type": "text/plain"})
