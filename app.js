@@ -1,6 +1,7 @@
 const handlerUserRouter = require('./src/router/user')
 const handlerBlogRouter = require('./src/router/blog')
 const queryString = require('querystring')
+const { get, set } = require('./src/db/redis')
 
 const getCookieExpires = () => {
     const d = new Date()
@@ -33,7 +34,7 @@ const getPostData = (req) => {
     }) 
 }
 
-const SESSION_DATA = {}
+// const SESSION_DATA = {}
 
 const serverHandler = (req, res) => {
     res.setHeader('Content-Type', 'application/json')
@@ -54,28 +55,38 @@ const serverHandler = (req, res) => {
     })
 
     //初始化session
+    // let needSetCookie = false
+    // let userId = req.cookie.userid
+    // if(userId) {
+    //     if(!SESSION_DATA[userId]) {
+    //         SESSION_DATA[userId] = {}
+    //     }
+    // } else {
+    //     needSetCookie = true
+    //     userId = `${Date.now()}_${Math.random()}`
+    //     SESSION_DATA[userId] = {}
+    // }
+    // req.session = SESSION_DATA[userId]
+
     let needSetCookie = false
     let userId = req.cookie.userid
-    if(userId) {
-        if(!SESSION_DATA[userId]) {
-            SESSION_DATA[userId] = {}
-        }
-    } else {
+    if(!userId) {
         needSetCookie = true
         userId = `${Date.now()}_${Math.random()}`
-        SESSION_DATA[userId] = {}
+        set(userId, {})
     }
-    req.session = SESSION_DATA[userId]
-    
-    
-    getPostData(req).then(postData => {
+    req.sessionId = userId
+    get(req.sessionId).then(sessionData => {
+        if(sessionData == null) {
+            set(req.sessionId, {})
+            req.session = {}
+        } else {
+            req.session = sessionData
+        }
+        return getPostData(req)
+    }).then(postData => {
         req.body = postData
         //处理 blog router
-        // const blogData = handlerBlogRouter(req, res)
-        // if(blogData) {
-        //     res.end(JSON.stringify(blogData))
-        //     return
-        // }
         const blogResult = handlerBlogRouter(req, res)
         if(blogResult) {
             blogResult.then(blogData => {
@@ -87,11 +98,6 @@ const serverHandler = (req, res) => {
             return
         }
         //handler user router
-        // const userData = handlerUserRouter(req, res)
-        // if(userData) {
-        //     res.end(JSON.stringify(userData))
-        //     return
-        // }
         const userResulet = handlerUserRouter(req, res)
         if(userResulet) {
             userResulet.then(userData => {
@@ -106,6 +112,9 @@ const serverHandler = (req, res) => {
         res.write("404 NOT FOUNT")
         res.end()
     })
+    
+
+    
 }
 
 module.exports = serverHandler
